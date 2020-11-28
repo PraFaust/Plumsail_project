@@ -1,16 +1,15 @@
 <template>
-    <div id="client">
-        <h1>{{msg}}</h1>
-        <router-link to="/">Перейти к Start Page</router-link>
-    </div>
+  <div class="contact">
+    <h1>{{ msg }}</h1>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'ClientForm',
+  name: 'ContactPage',
   data () {
     return {
-      msg: 'Welcome to Client form!'
+      msg: 'Developer contact: maximnsuslov@gmail.com'
     }
   }
 }
