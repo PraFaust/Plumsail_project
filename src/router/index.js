@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import StartPage from '@/components/StartPage'
-import ClientForm from '@/components/ClientForm'
+import AutorizationForm from '@/components/AutorizationForm'
+import ContactPage from '@/components/ContactPage'
+import NotFoundPage from '@/components/NotFoundPage'
 
 Vue.use(Router)
 
@@ -13,9 +15,19 @@ export default new Router({
       component: StartPage
     },
     {
-      path: '/client',
-      name: 'ClientForm',
-      component: ClientForm
+      path: '/autorization',
+      name: 'AutorizationForm',
+      component: AutorizationForm
+    },
+    {
+      path: '/contact',
+      name: 'ContactPage',
+      component: ContactPage
+    },
+    {
+      path: '*',
+      name: 'NotFoundPage',
+      component: NotFoundPage
     }
   ]
 })

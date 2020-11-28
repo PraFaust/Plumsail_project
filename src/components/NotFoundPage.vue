@@ -1,15 +1,16 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div class="notFound">
+    <h1>Page not found</h1>
+    <p>{{msg}}</p>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'StartPage',
+  name: 'NotFoundPage',
   data () {
     return {
-      msg: 'Welcome to Start Page'
+      msg: 'ERROR 404'
     }
   }
 }
@@ -19,6 +20,7 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+  color: #ff0000;
 }
 ul {
   list-style-type: none;
