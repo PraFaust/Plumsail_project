@@ -91,9 +91,9 @@ a {
 }
 
 .tab-title-class {
-    color: #42b983;  
+    color: #42b983;
 }
 .tab-title-class:hover {
-    color: #00ff00;  
+    color: #00ff00;
 }
 </style>
