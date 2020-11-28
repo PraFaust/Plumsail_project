@@ -173,19 +173,20 @@ export default {
         this.validEmail = false
         this.userRegistrationWarning = true
       }
-      // check password length
-      if (this.registerData.pass.length >= 8) {
-        this.passLength = true
-      } else {
-        this.passLength = false
-        this.userRegistrationWarning = true
-      }
       // check input password matched
       if (this.registerData.pass === this.registerData.rePass) {
         this.passMatch = true
       } else {
         this.passMatch = false
         this.userRegistrationWarning = true
+      }
+      // check password length
+      if (this.registerData.pass.length >= 8) {
+        this.passLength = true
+      } else {
+        this.passLength = false
+        this.userRegistrationWarning = true
+        this.passMatch = null
       }
       utilsMethod.checkRegisrtationData(this.registerData)
     }
