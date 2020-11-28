@@ -6,6 +6,7 @@
             <b-col lg = 6>
               <b-card no-body>
                 <b-tabs card card-header tabs fill>
+                  <!-- Login tab -->
                   <b-tab title="Login" active body-class="text-center" header-tag="nav" align="center" :title-link-class="'tab-title-class'">
                     <h2>Enter your login and password:</h2>
                     <b-card-text>
@@ -16,11 +17,71 @@
                       <b-alert :show="loginWarnings.showPasswordAlert" variant="danger">Please, enter password</b-alert>
                       <b-form-input v-model="loginData.pass" :state="loginData.passValid" id="input-pass" size="lg" placeholder="Password" type="password"></b-form-input>
                     </b-card-text>
+                    <b-card-text>
+                      <b-alert :show="loginWarnings.userNotRegistered" variant="danger">User with this login or password not found. Please try again or register.</b-alert>
+                    </b-card-text>
                     <b-button class="btn-lg btn-block" type="dark" variant="dark" @click="checkLogin()">Login!</b-button>
                   </b-tab>
+                  <!-- Registration tab -->
                   <b-tab title="Register" body-class="text-center" header-tag="nav" align="center" :title-link-class="'tab-title-class'">
                     <h2>Enter registration data below:</h2>
-                    <b-card-text>Register contents</b-card-text>
+                    <b-card-text>
+                      <b-form-input v-model="registerData.firstname" id="input-name" :state="nameSubmitted" aria-describedby="input-firstname-feedback input-firstname-allowed" size="lg" placeholder="First name"></b-form-input>
+                      <b-form-invalid-feedback id="input-firstname-feedback">
+                        Enter your firstname
+                      </b-form-invalid-feedback>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-form-input v-model="registerData.username" id="input-username" :state="nameSubmitted" aria-describedby="input-username-feedback input-username-allowed" size="lg" placeholder="Username"></b-form-input>
+                      <b-form-invalid-feedback id="input-username-feedback">
+                        Enter your username
+                      </b-form-invalid-feedback>
+                      <b-form-invalid-feedback id="input-username-allowed">
+                        Username not allowed, change please
+                      </b-form-invalid-feedback>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-form-input v-model="registerData.email" id="input-email" :state="validEmail" aria-describedby="input-email-feedback" size="lg" placeholder="Email"></b-form-input>
+                      <b-form-invalid-feedback id="input-email-feedback">
+                        Enter correct email adress
+                      </b-form-invalid-feedback>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-form-input v-model="registerData.pass" id="input-userpass" :state="passLength" aria-describedby="input-length-feedback" size="lg" placeholder="Password" type='password'></b-form-input>
+                      <b-form-invalid-feedback id="input-length-feedback">
+                        Enter at least 7 letters
+                      </b-form-invalid-feedback>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-form-input v-model="registerData.rePass" id="input-userRePass" :state="passMatch" aria-describedby="input-unmatch-pass" size="lg" placeholder="Password check" type='password'></b-form-input>
+                      <b-form-invalid-feedback id="input-unmatch-pass">
+                        Passwords do not match
+                      </b-form-invalid-feedback>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-row>
+                        <b-col>
+                          <h4 size="lg" align="left">Sex:</h4>
+                        </b-col>
+                        <b-col>
+                          <b-form-radio-group align="right" size="lg" v-model="registerData.sex">
+                            <b-form-radio size="lg" name="some-radios" value="male">Male</b-form-radio>
+                            <b-form-radio size="lg" name="some-radios" value="female">Female</b-form-radio>
+                          </b-form-radio-group>
+                        </b-col>
+                      </b-row>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-form-group>
+                        <b-form-checkbox-group id="checkbox-group" v-model="registerData.newsletter" name="newsletter-check">
+                          <b-form-checkbox value="news_accept">Send me newsletter on my email</b-form-checkbox>
+                        </b-form-checkbox-group>
+                      </b-form-group>
+                    </b-card-text>
+                    <b-card-text>
+                      <b-alert :show="loginWarnings.userRegistrationWarning" variant="danger">Please check all fields</b-alert>
+                    </b-card-text>
+                    <b-button class="btn-lg btn-block" type="dark" variant="dark" @click="registerUser()">Register me</b-button>
                   </b-tab>
                 </b-tabs>
               </b-card>
@@ -31,6 +92,8 @@
 </template>
 
 <script>
+const utilsMethod = require('../utils.js')
+
 export default {
   name: 'AutorizationForm',
   data () {
@@ -38,15 +101,31 @@ export default {
       msg: 'Welcome to Autorization form!',
       loginWarnings: {
         showLoginAlert: false,
-        showPasswordAlert: false
+        showPasswordAlert: false,
+        userNotRegistered: false,
+        userRegistrationWarning: false
       },
       loginData: {
         login: '',
         pass: '',
         loginValid: null,
         passValid: null
-      }
-
+      },
+      registerData: {
+        firstname: '',
+        username: '',
+        email: '',
+        pass: '',
+        rePass: '',
+        sex: 'male',
+        newsletter: []
+      },
+      nameSubmitted: null,
+      userSubmitted: null,
+      userAllowed: null,
+      passLength: null,
+      passMatch: null,
+      validEmail: null
     }
   },
   methods: {
@@ -67,15 +146,56 @@ export default {
         this.loginWarnings.showPasswordAlert = false
         this.loginData.passValid = true
       }
+    },
+    registerUser: function () {
+      console.log(`Register request...`)
+      console.log(`check value is ${this.registerData.newsletter[0]}...`)
+      this.userRegistrationWarning = false
+
+      // check firstname
+      if (this.registerData.firstname.length > 0) {
+        this.nameSubmitted = true
+      } else {
+        this.nameSubmitted = false
+        this.userRegistrationWarning = true
+      }
+      // check username
+      if (this.registerData.username.length > 0) {
+        this.userSubmitted = true
+      } else {
+        this.userSubmitted = false
+        this.userRegistrationWarning = true
+      }
+      // check valid email
+      if (utilsMethod.validateEmail(this.registerData.email)) {
+        this.validEmail = true
+      } else {
+        this.validEmail = false
+        this.userRegistrationWarning = true
+      }
+      // check password length
+      if (this.registerData.pass.length >= 8) {
+        this.passLength = true
+      } else {
+        this.passLength = false
+        this.userRegistrationWarning = true
+      }
+      // check input password matched
+      if (this.registerData.pass === this.registerData.rePass) {
+        this.passMatch = true
+      } else {
+        this.passMatch = false
+        this.userRegistrationWarning = true
+      }
+      utilsMethod.checkRegisrtationData(this.registerData)
     }
   }
 
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-h1, h2 {
+h1, h2, h4 {
   font-weight: normal;
 }
 ul {
