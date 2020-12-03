@@ -1,15 +1,36 @@
-
-function checkRegisrtationData (data) {
-  console.log(`registration success!`)
-  console.dir(data)
-
-  console.log(`email is ${validateEmail(data.email)}`)
-  return true
-}
+/* eslint-disable */
 
 function validateEmail (email) {
-  var re = /\S+@\S+\.\S+/
+  let re = /\S+@\S+\.\S+/
   return re.test(email)
 }
 
-module.exports = {checkRegisrtationData, validateEmail}
+function autorizeError () {
+  console.log(`autorize server error!!!`)
+}
+
+function registerSend (dataReg, callback) {
+  $.ajax({
+    url: 'http://localhost:50330/Home/register',
+    dataType: 'text',
+    method: 'GET',
+    cache: false,
+    success: callback,
+    error: autorizeError,
+    data: {'registerData': dataReg}
+  })
+}
+
+function loginSend (dataLog, callback) {
+  $.ajax({
+    url: 'http://localhost:50330/Home/login',
+    dataType: 'text',
+    method: 'GET',
+    cache: false,
+    success: callback,
+    error: autorizeError,
+    data: {'loginData': dataLog}
+  })
+}
+
+module.exports = {validateEmail, registerSend, loginSend}

@@ -17,7 +17,7 @@
                       <b-alert :show="loginWarnings.showPasswordAlert" variant="danger">Please, enter password</b-alert>
                       <b-form-input v-model="loginData.pass" :state="loginData.passValid" id="input-pass" size="lg" placeholder="Password" type="password"></b-form-input>
                     </b-card-text>
-                    <b-card-text>
+                    <b-card-text v-if="loginWarnings.showPasswordAlert==false && loginWarnings.showLoginAlert==false">
                       <b-alert :show="loginWarnings.userNotRegistered" variant="danger">User with this login or password not found. Please try again or register.</b-alert>
                     </b-card-text>
                     <b-button class="btn-lg btn-block" type="dark" variant="dark" @click="checkLogin()">Login!</b-button>
@@ -26,17 +26,14 @@
                   <b-tab title="Register" body-class="text-center" header-tag="nav" align="center" :title-link-class="'tab-title-class'">
                     <h2>Enter registration data below:</h2>
                     <b-card-text>
-                      <b-form-input v-model="registerData.firstname" id="input-name" :state="nameSubmitted" aria-describedby="input-firstname-feedback input-firstname-allowed" size="lg" placeholder="First name"></b-form-input>
+                      <b-form-input v-model="registerData.firstname" id="input-name" :state="firstnameSubmitted" aria-describedby="input-firstname-feedback input-firstname-allowed" size="lg" placeholder="First name"></b-form-input>
                       <b-form-invalid-feedback id="input-firstname-feedback">
                         Enter your firstname
                       </b-form-invalid-feedback>
                     </b-card-text>
                     <b-card-text>
-                      <b-form-input v-model="registerData.username" id="input-username" :state="nameSubmitted" aria-describedby="input-username-feedback input-username-allowed" size="lg" placeholder="Username"></b-form-input>
+                      <b-form-input v-model="registerData.username" id="input-username" :state="usernameSubmitted" aria-describedby="input-username-feedback" size="lg" placeholder="Username"></b-form-input>
                       <b-form-invalid-feedback id="input-username-feedback">
-                        Enter your username
-                      </b-form-invalid-feedback>
-                      <b-form-invalid-feedback id="input-username-allowed">
                         Username not allowed, change please
                       </b-form-invalid-feedback>
                     </b-card-text>
@@ -92,6 +89,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 const utilsMethod = require('../utils.js')
 
 export default {
@@ -120,8 +118,8 @@ export default {
         sex: 'male',
         newsletter: []
       },
-      nameSubmitted: null,
-      userSubmitted: null,
+      firstnameSubmitted: null,
+      usernameSubmitted: null,
       userAllowed: null,
       passLength: null,
       passMatch: null,
@@ -146,7 +144,11 @@ export default {
         this.loginWarnings.showPasswordAlert = false
         this.loginData.passValid = true
       }
+      let jsonLogin = JSON.stringify(this.loginData)
+      console.log(jsonLogin)
+      utilsMethod.loginSend(jsonLogin, this.loginResp)
     },
+
     registerUser: function () {
       console.log(`Register request...`)
       console.log(`check value is ${this.registerData.newsletter[0]}...`)
@@ -154,16 +156,16 @@ export default {
 
       // check firstname
       if (this.registerData.firstname.length > 0) {
-        this.nameSubmitted = true
+        this.firstnameSubmitted = true
       } else {
-        this.nameSubmitted = false
+        this.firstnameSubmitted = false
         this.userRegistrationWarning = true
       }
       // check username
       if (this.registerData.username.length > 0) {
-        this.userSubmitted = true
+        this.usernameSubmitted = true
       } else {
-        this.userSubmitted = false
+        this.usernameSubmitted = false
         this.userRegistrationWarning = true
       }
       // check valid email
@@ -188,7 +190,39 @@ export default {
         this.userRegistrationWarning = true
         this.passMatch = null
       }
-      utilsMethod.checkRegisrtationData(this.registerData)
+      // check news acception
+      if(this.registerData.newsletter.length == 0){
+          this.registerData.newsletter.push("news_notaccept");
+      }
+
+      let jsonRegistration = JSON.stringify(this.registerData)
+      console.log(jsonRegistration)
+      utilsMethod.registerSend(jsonRegistration, this.registerResp)
+    },
+
+    loginResp: function  (data, textStatus, jqXHR) {
+      console.log(`loginResp input data: ${data}`)
+      let response = new Object()
+      response = JSON.parse(data)
+      console.log(`login is ${response.login}, password is ${response.password}`)
+      if(!response.login || !response.password){
+        this.loginWarnings.userNotRegistered = true;
+      }
+      if(response.login & response.password){
+        this.loginWarnings.userNotRegistered = false;
+        this.msg = `Hello, ${this.loginData.login}!`;
+      }
+    },
+
+    registerResp: function (data, textStatus, jqXHR) {
+      console.log(`registerResp input data: ${data}`)
+      let response = new Object();
+      response = JSON.parse(data)
+      console.log(`login is ${response.login}`)
+      this.usernameSubmitted = response.login;
+      if(response.login){
+        this.msg = `Hello, ${this.registerData.username}! Registration success!`;
+      }
     }
   }
 
