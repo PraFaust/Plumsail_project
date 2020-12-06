@@ -11,7 +11,7 @@ function autorizeError () {
 
 function registerSend (dataReg, callback) {
   $.ajax({
-    url: 'http://localhost:50330/Home/register',
+    url: 'http://localhost:50330/User/register',
     dataType: 'text',
     method: 'GET',
     cache: false,
@@ -23,7 +23,7 @@ function registerSend (dataReg, callback) {
 
 function loginSend (dataLog, callback) {
   $.ajax({
-    url: 'http://localhost:50330/Home/login',
+    url: 'http://localhost:50330/User/login',
     dataType: 'text',
     method: 'GET',
     cache: false,
