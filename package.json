@@ -8,7 +8,11 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "clean": "rm -rf ./node_modules",
+    "reinstall": "npm run clean && npm install",
+    "rebuild": "npm run clean && npm install && npm run build",
+    "rebuild_dev": "npm run clean && npm install && npm run dev"
   },
   "dependencies": {
     "bootstrap": "^4.5.3",
