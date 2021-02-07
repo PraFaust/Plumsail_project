@@ -194,9 +194,11 @@ export default {
         this.passMatch = null
       }
 
-      let jsonRegistration = JSON.stringify(this.registerData)
-      console.log(jsonRegistration)
-      utilsMethod.registerSend(jsonRegistration, this.registerResp)
+      if(this.passMatch === true){
+        let jsonRegistration = JSON.stringify(this.registerData)
+        console.log(jsonRegistration)
+        utilsMethod.registerSend(jsonRegistration, this.registerResp)
+      }
     },
 
     loginResp: function  (data, textStatus, jqXHR) {
