@@ -70,9 +70,12 @@
                     </b-card-text>
                     <b-card-text>
                       <b-form-group>
-                        <b-form-checkbox-group id="checkbox-group" v-model="registerData.newsletter" name="newsletter-check">
-                          <b-form-checkbox value="news_accept">Send me newsletter on my email</b-form-checkbox>
-                        </b-form-checkbox-group>
+                          <b-form-checkbox id="checkbox-1"
+                            v-model="registerData.newsletter"
+                            name="newsletter-check"
+                            value="news_accept"
+                            unchecked-value="news_notaccept">Send me newsletter on my email
+                          </b-form-checkbox>
                       </b-form-group>
                     </b-card-text>
                     <b-card-text>
@@ -116,7 +119,7 @@ export default {
         pass: '',
         rePass: '',
         sex: 'male',
-        newsletter: []
+        newsletter: ''
       },
       firstnameSubmitted: null,
       usernameSubmitted: null,
@@ -151,7 +154,7 @@ export default {
 
     registerUser: function () {
       console.log(`Register request...`)
-      console.log(`check value is ${this.registerData.newsletter[0]}...`)
+      console.log(`check value is ${this.registerData.newsletter}...`)
       this.userRegistrationWarning = false
 
       // check firstname
@@ -189,10 +192,6 @@ export default {
         this.passLength = false
         this.userRegistrationWarning = true
         this.passMatch = null
-      }
-      // check news acception
-      if(this.registerData.newsletter.length == 0){
-          this.registerData.newsletter.push("news_notaccept");
       }
 
       let jsonRegistration = JSON.stringify(this.registerData)
